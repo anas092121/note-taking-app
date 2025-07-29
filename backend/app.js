@@ -1,15 +1,25 @@
 import express from "express";
-import mongoose from "mongoose";
+import userRouter from "./routes/user.js";
+import taskRouter from "./routes/task.js";
+import { config } from "dotenv";
+import cookieParser from "cookie-parser";
 
-const app = express();
+export const app = express();
 
-mongoose
-  .connect("mongodb://localhost:27017/", {
-    dbName: "noteApp",
-  })
-  .then((c) => console.log(`Database Connected with ${c.connection.host}`))
-  .catch((e) => console.log(e));
+config({
+  path: "./data/config.env",
+});
 
-app.listen(4000, () => {
-  console.log("Sever Is Working......");
+const router = express.Router();
+
+// middleware
+app.use(express.json());
+app.use(cookieParser());
+
+// using routes
+app.use("/api/v1/users", userRouter);
+app.use("/api/v1/tasks", taskRouter);
+
+app.get("/", (req, res) => {
+  res.send("Server Started!");
 });
